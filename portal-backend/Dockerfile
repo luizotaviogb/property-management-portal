@@ -8,18 +8,11 @@ RUN apt-get update \
     && apt-get install -y postgresql-client-15 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set work directory
 WORKDIR /app
 
-# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
-COPY app.py .
+COPY . .
 
-# Expose Flask port
-EXPOSE 5001
-
-# Run Flask app
 CMD ["python", "app.py"]
