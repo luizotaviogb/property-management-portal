@@ -1,7 +1,7 @@
 FROM node:22.17.0 as build
 WORKDIR /usr/src/app
-COPY package.json package-lock.json ./
-RUN npm install
+COPY package.json yarn.lock ./
+RUN yarn
 COPY . .
 RUN npm run build --prod
 
