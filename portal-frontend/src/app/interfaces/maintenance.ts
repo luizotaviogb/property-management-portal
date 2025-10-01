@@ -1,7 +1,11 @@
 export interface IMaintenance {
-  id: number;
+  id?: number;
   description: string;
-  status: string;
-  scheduledDate: string;
-  propertyId: number;
+  status?: string;
+  statusId?: number;
+  maintenancestatusid?: number;
+  scheduledDate?: string;
+  scheduleddate?: string;
+  propertyId?: number;
+  propertyid?: number;
 }

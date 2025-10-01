@@ -1,8 +1,10 @@
 export interface IProperty {
-  id: number;
+  id?: number;
   address: string;
-  type: string;
-  status: string;
+  type?: string;
+  status?: string;
+  typeId?: number;
+  statusId?: number;
   purchaseDate: string;
   price: number;
 }

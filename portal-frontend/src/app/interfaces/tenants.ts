@@ -1,9 +1,14 @@
 export interface ITenant {
-  id: number;
+  id?: number;
   name: string;
-  contactInfo: string;
-  leaseTermStart: string;
-  leaseTermEnd: string;
-  paymentStatus: string;
-  propertyId: number;
+  info?: string;
+  contactinfo?: string;
+  leaseStart?: string;
+  leaseEnd?: string;
+  leasetermstart?: string;
+  leasetermend?: string;
+  paymentStatus?: string;
+  paymentstatusid?: number;
+  propertyId?: number;
+  propertyid?: number;
 }
