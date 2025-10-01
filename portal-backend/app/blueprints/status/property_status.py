@@ -30,8 +30,8 @@ def get_property_statuses():
                     example: 'Available'
     """
     statuses = PropertyStatus.query.all()
-    result = [{'propertystatusid': s.PropertyStatusID, 'description': s.Description} for s in statuses]
-    return jsonify({'property_statuses': result})
+    result = [{'propertystatusid': s.propertystatusid, 'description': s.description} for s in statuses]
+    return jsonify({'data': result})
 
 @property_status_bp.route('/<int:id>', methods=['GET'])
 def get_property_status(id):
@@ -63,8 +63,8 @@ def get_property_status(id):
     """
     status = PropertyStatus.query.get(id)
     if not status:
-        return jsonify({'error': 'PropertyStatus not found'}), 404
-    return jsonify({'propertystatusid': status.PropertyStatusID, 'description': status.Description})
+        return jsonify({'data': None, 'error': 'PropertyStatus not found'}), 404
+    return jsonify({'data': {'propertystatusid': status.propertystatusid, 'description': status.description}})
 
 @property_status_bp.route('/', methods=['POST'])
 def create_property_status():
@@ -90,10 +90,16 @@ def create_property_status():
         description: Invalid input
     """
     data = request.json
-    new_status = PropertyStatus(Description=data['Description'])
-    db.session.add(new_status)
-    db.session.commit()
-    return jsonify({'message': 'PropertyStatus created successfully'}), 201
+    if not data or 'description' not in data:
+        return jsonify({'data': None, 'error': 'Missing required field: description'}), 400
+    try:
+        new_status = PropertyStatus(description=data['description'])
+        db.session.add(new_status)
+        db.session.commit()
+        return jsonify({'data': {'id': new_status.propertystatusid, 'message': 'PropertyStatus created successfully'}}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'data': None, 'error': f'Failed to create property status: {str(e)}'}), 400
 
 @property_status_bp.route('/<int:id>', methods=['PUT'])
 def update_property_status(id):
@@ -128,10 +134,16 @@ def update_property_status(id):
     data = request.json
     status = PropertyStatus.query.get(id)
     if not status:
-        return jsonify({'error': 'PropertyStatus not found'}), 404
-    status.Description = data['Description']
-    db.session.commit()
-    return jsonify({'message': 'PropertyStatus updated successfully'})
+        return jsonify({'data': None, 'error': 'PropertyStatus not found'}), 404
+    if not data or 'description' not in data:
+        return jsonify({'data': None, 'error': 'Missing required field: description'}), 400
+    try:
+        status.description = data['description']
+        db.session.commit()
+        return jsonify({'data': {'message': 'PropertyStatus updated successfully'}})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'data': None, 'error': f'Failed to update property status: {str(e)}'}), 400
 
 @property_status_bp.route('/<int:id>', methods=['DELETE'])
 def delete_property_status(id):
@@ -154,7 +166,11 @@ def delete_property_status(id):
     """
     status = PropertyStatus.query.get(id)
     if not status:
-        return jsonify({'error': 'PropertyStatus not found'}), 404
-    db.session.delete(status)
-    db.session.commit()
-    return jsonify({'message': 'PropertyStatus deleted successfully'})
+        return jsonify({'data': None, 'error': 'PropertyStatus not found'}), 404
+    try:
+        db.session.delete(status)
+        db.session.commit()
+        return jsonify({'data': {'message': 'PropertyStatus deleted successfully'}})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'data': None, 'error': f'Failed to delete property status: {str(e)}'}), 400

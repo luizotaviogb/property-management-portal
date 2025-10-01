@@ -50,6 +50,84 @@ def get_properties():
     ]
     return jsonify({'data': result})
 
+@properties_bp.route('/', methods=['POST'])
+def create_property():
+    """
+    Create a new property
+    ---
+    tags:
+      - Properties
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - address
+            - typeId
+            - statusId
+            - purchaseDate
+            - price
+          properties:
+            address:
+              type: string
+              example: "123 Main St, Paris, 75001"
+            typeId:
+              type: integer
+              example: 1
+            statusId:
+              type: integer
+              example: 1
+            purchaseDate:
+              type: string
+              format: date
+              example: "2024-01-15"
+            price:
+              type: number
+              format: float
+              example: 500000.00
+    responses:
+      201:
+        description: Property created successfully
+        schema:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                id:
+                  type: integer
+                message:
+                  type: string
+      400:
+        description: Invalid input
+    """
+    data = request.json
+
+    if not data:
+        return jsonify({'data': None, 'error': 'No data provided'}), 400
+
+    required_fields = ['address', 'typeId', 'statusId', 'purchaseDate', 'price']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify({'data': None, 'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+
+    try:
+        new_property = Property(
+            address=data['address'],
+            propertytypeid=data['typeId'],
+            propertystatusid=data['statusId'],
+            purchasedate=data['purchaseDate'],
+            price=data['price']
+        )
+        db.session.add(new_property)
+        db.session.commit()
+        return jsonify({'data': {'id': new_property.propertyid, 'message': 'Property created successfully'}}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'data': None, 'error': f'Failed to create property: {str(e)}'}), 400
+
 @properties_bp.route('/<int:id>', methods=['GET'])
 def get_property_by_id(id):
     """

@@ -17,7 +17,7 @@ def get_property_types():
         schema:
           type: object
           properties:
-            property_types:
+            data:
               type: array
               items:
                 type: object
@@ -30,8 +30,8 @@ def get_property_types():
                     example: Apartment
     """
     types = PropertyType.query.all()
-    result = [{'propertytypeid': t.PropertyTypeID, 'description': t.Description} for t in types]
-    return jsonify({'property_types': result})
+    result = [{'propertytypeid': t.propertytypeid, 'description': t.description} for t in types]
+    return jsonify({'data': result})
 
 @property_type_bp.route('/<int:id>', methods=['GET'])
 def get_property_type(id):
@@ -49,22 +49,13 @@ def get_property_type(id):
     responses:
       200:
         description: A single property type
-        schema:
-          type: object
-          properties:
-            propertytypeid:
-              type: integer
-              example: 1
-            description:
-              type: string
-              example: Apartment
       404:
         description: PropertyType not found
     """
     type_ = PropertyType.query.get(id)
     if not type_:
-        return jsonify({'error': 'PropertyType not found'}), 404
-    return jsonify({'propertytypeid': type_.PropertyTypeID, 'description': type_.Description})
+        return jsonify({'data': None, 'error': 'PropertyType not found'}), 404
+    return jsonify({'data': {'propertytypeid': type_.propertytypeid, 'description': type_.description}})
 
 @property_type_bp.route('/', methods=['POST'])
 def create_property_type():
@@ -90,10 +81,16 @@ def create_property_type():
         description: Invalid input
     """
     data = request.json
-    new_type = PropertyType(Description=data['Description'])
-    db.session.add(new_type)
-    db.session.commit()
-    return jsonify({'message': 'PropertyType created successfully'}), 201
+    if not data or 'description' not in data:
+        return jsonify({'data': None, 'error': 'Missing required field: description'}), 400
+    try:
+        new_type = PropertyType(description=data['description'])
+        db.session.add(new_type)
+        db.session.commit()
+        return jsonify({'data': {'id': new_type.propertytypeid, 'message': 'PropertyType created successfully'}}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'data': None, 'error': f'Failed to create property type: {str(e)}'}), 400
 
 @property_type_bp.route('/<int:id>', methods=['PUT'])
 def update_property_type(id):
@@ -128,10 +125,16 @@ def update_property_type(id):
     data = request.json
     type_ = PropertyType.query.get(id)
     if not type_:
-        return jsonify({'error': 'PropertyType not found'}), 404
-    type_.Description = data['Description']
-    db.session.commit()
-    return jsonify({'message': 'PropertyType updated successfully'})
+        return jsonify({'data': None, 'error': 'PropertyType not found'}), 404
+    if not data or 'description' not in data:
+        return jsonify({'data': None, 'error': 'Missing required field: description'}), 400
+    try:
+        type_.description = data['description']
+        db.session.commit()
+        return jsonify({'data': {'message': 'PropertyType updated successfully'}})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'data': None, 'error': f'Failed to update property type: {str(e)}'}), 400
 
 @property_type_bp.route('/<int:id>', methods=['DELETE'])
 def delete_property_type(id):
@@ -154,7 +157,11 @@ def delete_property_type(id):
     """
     type_ = PropertyType.query.get(id)
     if not type_:
-        return jsonify({'error': 'PropertyType not found'}), 404
-    db.session.delete(type_)
-    db.session.commit()
-    return jsonify({'message': 'PropertyType deleted successfully'})
+        return jsonify({'data': None, 'error': 'PropertyType not found'}), 404
+    try:
+        db.session.delete(type_)
+        db.session.commit()
+        return jsonify({'data': {'message': 'PropertyType deleted successfully'}})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'data': None, 'error': f'Failed to delete property type: {str(e)}'}), 400

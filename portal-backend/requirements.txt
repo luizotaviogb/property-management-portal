@@ -5,3 +5,5 @@ flask-sqlalchemy
 tenacity
 flask-restful
 flasgger
+pytest>=7.0.0
+pytest-flask>=1.2.0
