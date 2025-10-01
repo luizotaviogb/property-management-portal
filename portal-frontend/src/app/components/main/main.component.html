@@ -1,0 +1,13 @@
+<div class="main-container">
+  <nav>
+    <button (click)="setActiveTab('tenants')" [class.active]="activeTab === 'tenants'">Tenants</button>
+    <button (click)="setActiveTab('properties')" [class.active]="activeTab === 'properties'">Properties</button>
+    <button (click)="setActiveTab('maintenance')" [class.active]="activeTab === 'maintenance'">Maintenance</button>
+  </nav>
+
+  <div class="tab-content">
+    <app-tenants *ngIf="activeTab === 'tenants'"></app-tenants>
+    <app-properties *ngIf="activeTab === 'properties'"></app-properties>
+    <app-maintenance *ngIf="activeTab === 'maintenance'"></app-maintenance>
+  </div>
+</div>

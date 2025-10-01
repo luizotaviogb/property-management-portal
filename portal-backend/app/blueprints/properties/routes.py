@@ -17,7 +17,7 @@ def get_properties():
         schema:
           type: object
           properties:
-            properties:
+            data:
               type: array
               items:
                 type: object
@@ -48,7 +48,7 @@ def get_properties():
             'price': float(p.price)
         } for p in properties
     ]
-    return jsonify({'properties': result})
+    return jsonify({'data': result})
 
 @properties_bp.route('/<int:id>', methods=['GET'])
 def get_property_by_id(id):
@@ -69,7 +69,7 @@ def get_property_by_id(id):
         schema:
           type: object
           properties:
-            property:
+            data:
               type: object
               properties:
                 id:
@@ -95,7 +95,7 @@ def get_property_by_id(id):
     """
     property = Property.query.join(PropertyType).join(PropertyStatus).filter(Property.propertyid == id).first()
     if not property:
-        return jsonify({'error': 'Property not found'}), 404
+        return jsonify({'data': None, 'error': 'Property not found'}), 404
     result = {
         'id': property.propertyid,
         'address': property.address,
@@ -106,7 +106,7 @@ def get_property_by_id(id):
         'purchaseDate': property.purchasedate.isoformat(),
         'price': float(property.price)
     }
-    return jsonify({'property': result})
+    return jsonify({'data': result})
 
 @properties_bp.route('/<int:id>', methods=['PUT'])
 def update_property(id):
@@ -149,14 +149,14 @@ def update_property(id):
     data = request.json
     property_ = Property.query.get(id)
     if not property_:
-        return jsonify({'error': 'Property not found'}), 404
+        return jsonify({'data': None, 'error': 'Property not found'}), 404
     property_.address = data.get('address', property_.address)
     property_.propertytypeid = data.get('typeId', property_.propertytypeid)
     property_.propertystatusid = data.get('statusId', property_.propertystatusid)
     property_.purchasedate = data.get('purchaseDate', property_.purchasedate)
     property_.price = data.get('price', property_.price)
     db.session.commit()
-    return jsonify({'message': 'Property updated successfully'})
+    return jsonify({'data': {'message': 'Property updated successfully'}})
 
 @properties_bp.route('/<int:id>', methods=['DELETE'])
 def delete_property(id):
@@ -179,7 +179,7 @@ def delete_property(id):
     """
     property_ = Property.query.get(id)
     if not property_:
-        return jsonify({'error': 'Property not found'}), 404
+        return jsonify({'data': None, 'error': 'Property not found'}), 404
     db.session.delete(property_)
     db.session.commit()
-    return jsonify({'message': 'Property deleted successfully'})
+    return jsonify({'data': {'message': 'Property deleted successfully'}})

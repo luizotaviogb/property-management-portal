@@ -1,0 +1,30 @@
+/* Main component styles */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.tab-content {
+  width: 100%;
+}

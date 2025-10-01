@@ -10,6 +10,7 @@ from .blueprints.status.maintenance_status import maintenance_status_bp
 from .blueprints.status.property_type import property_type_bp
 from flask_restful import Api, Resource
 from flasgger import Swagger
+from flask_cors import CORS
 import os
 
 def create_app():
@@ -17,6 +18,9 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
+
+    # Enable CORS
+    CORS(app)
 
     app.register_blueprint(properties_bp, url_prefix='/properties')
     app.register_blueprint(tenants_bp, url_prefix='/tenants')
