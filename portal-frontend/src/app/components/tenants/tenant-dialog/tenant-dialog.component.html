@@ -1,0 +1,72 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Tenant' : 'Create Tenant' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="tenantForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="Enter tenant name">
+      <mat-error *ngIf="tenantForm.get('name')?.hasError('required')">
+        Name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contact Info</mat-label>
+      <input matInput formControlName="contactinfo" placeholder="Enter contact information">
+      <mat-error *ngIf="tenantForm.get('contactinfo')?.hasError('required')">
+        Contact info is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Lease Term Start</mat-label>
+      <input matInput [matDatepicker]="startPicker" formControlName="leasetermstart">
+      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+      <mat-datepicker #startPicker></mat-datepicker>
+      <mat-error *ngIf="tenantForm.get('leasetermstart')?.hasError('required')">
+        Lease start date is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Lease Term End</mat-label>
+      <input matInput [matDatepicker]="endPicker" formControlName="leasetermend">
+      <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+      <mat-datepicker #endPicker></mat-datepicker>
+      <mat-error *ngIf="tenantForm.get('leasetermend')?.hasError('required')">
+        Lease end date is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Payment Status</mat-label>
+      <mat-select formControlName="paymentstatusid">
+        <mat-option *ngFor="let status of data.paymentStatuses" [value]="status.id">
+          {{ status.description }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="tenantForm.get('paymentstatusid')?.hasError('required')">
+        Payment status is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Property</mat-label>
+      <mat-select formControlName="propertyid">
+        <mat-option *ngFor="let property of data.properties" [value]="property.id">
+          {{ property.address }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="tenantForm.get('propertyid')?.hasError('required')">
+        Property is required
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!tenantForm.valid">
+    {{ isEditMode ? 'Update' : 'Create' }}
+  </button>
+</mat-dialog-actions>

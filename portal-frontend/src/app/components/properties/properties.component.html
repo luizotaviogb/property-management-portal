@@ -1,8 +1,124 @@
 <div class="properties-container">
-  <h2>Properties</h2>
-  <ul>
-    <li *ngFor="let property of properties">
-      {{ property.id }} - {{ property.address }}
-    </li>
-  </ul>
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <mat-icon class="header-icon">home</mat-icon>
+        <div>
+          <h2>Properties</h2>
+          <p class="subtitle">Manage your property portfolio</p>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" (click)="openCreateDialog()" class="add-button">
+        <mat-icon>add_circle</mat-icon>
+        Add New Property
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-container">
+    <mat-card class="stat-card">
+      <div class="stat-content">
+        <mat-icon class="stat-icon">business</mat-icon>
+        <div class="stat-details">
+          <p class="stat-value">{{ dataSource.data.length }}</p>
+          <p class="stat-label">Total Properties</p>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Loading properties...</p>
+  </div>
+
+  <mat-card *ngIf="!loading" class="table-card">
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="properties-table" matSort #sort="matSort">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let property">
+            <span class="id-badge">#{{ property.id }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+          <td mat-cell *matCellDef="let property">
+            <div class="address-cell">
+              <mat-icon class="cell-icon">location_on</mat-icon>
+              <span>{{ property.address }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+          <td mat-cell *matCellDef="let property">
+            <mat-chip class="type-chip">{{ property.type }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let property">
+            <span class="status-badge" [ngClass]="'status-' + (property.status || '').toLowerCase()">
+              {{ property.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="purchaseDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Purchase Date</th>
+          <td mat-cell *matCellDef="let property">
+            <div class="date-cell">
+              <mat-icon class="cell-icon">event</mat-icon>
+              <span>{{ property.purchaseDate | date:'mediumDate' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+          <td mat-cell *matCellDef="let property">
+            <span class="price-cell">{{ property.price | currency:'EUR':'symbol':'1.0-0' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let property">
+            <div class="action-buttons">
+              <button mat-icon-button color="primary" (click)="openEditDialog(property)" matTooltip="Edit Property">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteProperty(property)" matTooltip="Delete Property">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+
+      <div *ngIf="dataSource.data.length === 0" class="empty-state">
+        <mat-icon class="empty-icon">home_work</mat-icon>
+        <h3>No Properties Found</h3>
+        <p>Get started by adding your first property to the system.</p>
+        <button mat-raised-button color="primary" (click)="openCreateDialog()">
+          <mat-icon>add_circle</mat-icon>
+          Add Your First Property
+        </button>
+      </div>
+    </div>
+
+    <mat-paginator *ngIf="dataSource.data.length > 0"
+      [length]="dataSource.data.length"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      showFirstLastButtons>
+    </mat-paginator>
+  </mat-card>
 </div>

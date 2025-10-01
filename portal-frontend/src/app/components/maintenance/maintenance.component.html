@@ -1,8 +1,117 @@
 <div class="maintenance-container">
-  <h2>Maintenance</h2>
-  <ul>
-    <li *ngFor="let maintenance of maintenanceList">
-      {{ maintenance.description }} - {{ maintenance.status }}
-    </li>
-  </ul>
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <mat-icon class="header-icon">build</mat-icon>
+        <div>
+          <h2>Maintenance</h2>
+          <p class="subtitle">Track and manage maintenance tasks</p>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" (click)="openCreateDialog()" class="add-button">
+        <mat-icon>add_task</mat-icon>
+        Add New Task
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-container">
+    <mat-card class="stat-card">
+      <div class="stat-content">
+        <mat-icon class="stat-icon">construction</mat-icon>
+        <div class="stat-details">
+          <p class="stat-value">{{ dataSource.data.length }}</p>
+          <p class="stat-label">Total Tasks</p>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Loading maintenance tasks...</p>
+  </div>
+
+  <mat-card *ngIf="!loading" class="table-card">
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="maintenance-table" matSort #sort="matSort">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let maintenance">
+            <span class="id-badge">#{{ maintenance.id }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+          <td mat-cell *matCellDef="let maintenance">
+            <div class="description-cell">
+              <mat-icon class="cell-icon">description</mat-icon>
+              <span>{{ maintenance.description }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let maintenance">
+            <span class="status-badge" [ngClass]="'status-' + (maintenance.status || '').toLowerCase()">
+              {{ maintenance.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="scheduledDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Scheduled Date</th>
+          <td mat-cell *matCellDef="let maintenance">
+            <div class="date-cell">
+              <mat-icon class="cell-icon">schedule</mat-icon>
+              <span>{{ maintenance.scheduledDate | date:'mediumDate' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="propertyId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Property</th>
+          <td mat-cell *matCellDef="let maintenance">
+            <mat-chip class="property-chip">Property #{{ maintenance.propertyId }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let maintenance">
+            <div class="action-buttons">
+              <button mat-icon-button color="primary" (click)="openEditDialog(maintenance)" matTooltip="Edit Task">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteMaintenance(maintenance)" matTooltip="Delete Task">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+
+      <div *ngIf="dataSource.data.length === 0" class="empty-state">
+        <mat-icon class="empty-icon">handyman</mat-icon>
+        <h3>No Maintenance Tasks Found</h3>
+        <p>Get started by creating your first maintenance task.</p>
+        <button mat-raised-button color="primary" (click)="openCreateDialog()">
+          <mat-icon>add_task</mat-icon>
+          Add Your First Task
+        </button>
+      </div>
+    </div>
+
+    <mat-paginator #paginator *ngIf="dataSource.data.length > 0"
+      [length]="dataSource.data.length"
+      [pageSize]="10"
+      [pageSizeOptions]="[1, 10, 25, 50]"
+      showFirstLastButtons>
+    </mat-paginator>
+  </mat-card>
 </div>

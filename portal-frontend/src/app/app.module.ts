@@ -7,8 +7,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
-import { MainComponent } from './components/main/main.component';
-
 @NgModule({
   declarations: [
   ],
@@ -16,14 +14,12 @@ import { MainComponent } from './components/main/main.component';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
-    MainComponent,
     MatTabsModule,
     MatCardModule,
     MatButtonModule
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi())
-  ],
-  bootstrap: []
+  ]
 })
 export class AppModule { }

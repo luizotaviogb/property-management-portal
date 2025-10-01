@@ -1,13 +1,60 @@
-<div class="main-container">
-  <nav>
-    <button (click)="setActiveTab('tenants')" [class.active]="activeTab === 'tenants'">Tenants</button>
-    <button (click)="setActiveTab('properties')" [class.active]="activeTab === 'properties'">Properties</button>
-    <button (click)="setActiveTab('maintenance')" [class.active]="activeTab === 'maintenance'">Maintenance</button>
-  </nav>
+<div class="app-container">
+  <mat-toolbar color="primary" class="app-header">
+    <div class="header-content">
+      <div class="logo-section">
+        <mat-icon class="logo-icon">business</mat-icon>
+        <span class="app-title">Property Management Portal</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="header-actions">
+        <button mat-icon-button matTooltip="Notifications">
+          <mat-icon>notifications</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Settings">
+          <mat-icon>settings</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="User Profile">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
 
-  <div class="tab-content">
-    <app-tenants *ngIf="activeTab === 'tenants'"></app-tenants>
-    <app-properties *ngIf="activeTab === 'properties'"></app-properties>
-    <app-maintenance *ngIf="activeTab === 'maintenance'"></app-maintenance>
+  <div class="main-content">
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="content-tabs" animationDuration="300ms">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">people</mat-icon>
+          Tenants
+        </ng-template>
+        <div class="tab-content-wrapper fade-in">
+          <app-tenants></app-tenants>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">home</mat-icon>
+          Properties
+        </ng-template>
+        <div class="tab-content-wrapper fade-in">
+          <app-properties></app-properties>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">build</mat-icon>
+          Maintenance
+        </ng-template>
+        <div class="tab-content-wrapper fade-in">
+          <app-maintenance></app-maintenance>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </div>
+
+  <footer class="app-footer">
+    <p>&copy; {{ currentYear }} Property Management Portal. All rights reserved.</p>
+  </footer>
 </div>

@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Maintenance' : 'Create Maintenance' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="maintenanceForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" placeholder="Enter maintenance description" rows="3"></textarea>
+      <mat-error *ngIf="maintenanceForm.get('description')?.hasError('required')">
+        Description is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Maintenance Status</mat-label>
+      <mat-select formControlName="maintenancestatusid">
+        <mat-option *ngFor="let status of data.maintenanceStatuses" [value]="status.id">
+          {{ status.description }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="maintenanceForm.get('maintenancestatusid')?.hasError('required')">
+        Status is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Scheduled Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="scheduleddate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="maintenanceForm.get('scheduleddate')?.hasError('required')">
+        Scheduled date is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Property</mat-label>
+      <mat-select formControlName="propertyid">
+        <mat-option *ngFor="let property of data.properties" [value]="property.id">
+          {{ property.address }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="maintenanceForm.get('propertyid')?.hasError('required')">
+        Property is required
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!maintenanceForm.valid">
+    {{ isEditMode ? 'Update' : 'Create' }}
+  </button>
+</mat-dialog-actions>
