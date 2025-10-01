@@ -8,23 +8,17 @@
           <p class="subtitle">Manage tenant information and leases</p>
         </div>
       </div>
-      <button mat-raised-button color="primary" (click)="openCreateDialog()" class="add-button">
-        <mat-icon>person_add</mat-icon>
-        Add New Tenant
-      </button>
-    </div>
-  </div>
-
-  <div class="stats-container">
-    <mat-card class="stat-card">
-      <div class="stat-content">
-        <mat-icon class="stat-icon">groups</mat-icon>
-        <div class="stat-details">
-          <p class="stat-value">{{ dataSource.data.length }}</p>
-          <p class="stat-label">Total Tenants</p>
+      <div class="header-actions">
+        <div class="count-badge">
+          <span class="count-value">{{ dataSource.data.length }}</span>
+          <span class="count-label">Total</span>
         </div>
+        <button mat-raised-button color="primary" (click)="openCreateDialog()" class="add-button">
+          <mat-icon>person_add</mat-icon>
+          Add New Tenant
+        </button>
       </div>
-    </mat-card>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading-container">

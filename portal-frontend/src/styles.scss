@@ -44,10 +44,13 @@
   --transition-slow: 0.3s ease;
 }
 
-* {
+*:not(mat-form-field):not(mat-label):not(.mat-mdc-form-field):not(.mat-mdc-text-field-wrapper):not(.mat-mdc-form-field-flex):not(.mat-mdc-form-field-infix) {
+  box-sizing: border-box;
+}
+
+html, body, h1, h2, h3, h4, h5, h6, p, div, span, ul, ol, li {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 html, body {
