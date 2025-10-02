@@ -226,6 +226,15 @@ def create_lease():
     if missing_fields:
         return jsonify({'data': None, 'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
 
+    try:
+        start_date = datetime.strptime(str(data['leasetermstart']), '%Y-%m-%d')
+        end_date = datetime.strptime(str(data['leasetermend']), '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'data': None, 'error': 'Lease dates must be in YYYY-MM-DD format'}), 400
+
+    if end_date <= start_date:
+        return jsonify({'data': None, 'error': 'Lease end date must be after start date'}), 400
+
     if check_lease_overlap(data['propertyid'], data['leasetermstart'], data['leasetermend']):
         return jsonify({
             'data': None,

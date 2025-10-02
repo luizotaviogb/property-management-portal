@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from ...models import Maintenance, MaintenanceStatus, Property
 from ...db import db
+from datetime import datetime
 
 maintenance_bp = Blueprint('maintenance', __name__)
 
@@ -125,6 +126,14 @@ def create_maintenance():
     missing_fields = [field for field in required_fields if field not in data]
     if missing_fields:
         return jsonify({'data': None, 'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+
+    if not isinstance(data.get('description'), str) or len(data['description'].strip()) == 0:
+        return jsonify({'data': None, 'error': 'Description must be a non-empty string'}), 400
+
+    try:
+        datetime.strptime(str(data['scheduleddate']), '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'data': None, 'error': 'Scheduled date must be in YYYY-MM-DD format'}), 400
 
     try:
         new_maintenance = Maintenance(

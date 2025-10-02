@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy.exc import IntegrityError
 from ...models import Property, PropertyType, PropertyStatus
 from ...db import db
+from datetime import datetime
 
 properties_bp = Blueprint('properties', __name__)
 
@@ -113,6 +114,21 @@ def create_property():
     missing_fields = [field for field in required_fields if field not in data]
     if missing_fields:
         return jsonify({'data': None, 'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+
+    if not isinstance(data.get('address'), str) or len(data['address'].strip()) == 0:
+        return jsonify({'data': None, 'error': 'Address must be a non-empty string'}), 400
+
+    try:
+        price = float(data['price'])
+        if price < 0:
+            return jsonify({'data': None, 'error': 'Price cannot be negative'}), 400
+    except (ValueError, TypeError):
+        return jsonify({'data': None, 'error': 'Price must be a valid number'}), 400
+
+    try:
+        datetime.strptime(str(data['purchaseDate']), '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'data': None, 'error': 'Purchase date must be in YYYY-MM-DD format'}), 400
 
     try:
         new_property = Property(

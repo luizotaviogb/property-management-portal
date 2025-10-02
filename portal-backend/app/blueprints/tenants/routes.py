@@ -2,8 +2,17 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy.exc import IntegrityError
 from ...models import Tenant, Lease
 from ...db import db
+import re
 
 tenants_bp = Blueprint('tenants', __name__)
+
+def validate_contact_info(contact_info):
+    email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    phone_pattern = r'^\+?[\d\s\-\(\)]{10,}$'
+
+    if re.match(email_pattern, contact_info) or re.match(phone_pattern, contact_info):
+        return True
+    return False
 
 @tenants_bp.route('/', methods=['GET'])
 def get_tenants():
@@ -107,6 +116,12 @@ def create_tenant():
     missing_fields = [field for field in required_fields if field not in data]
     if missing_fields:
         return jsonify({'data': None, 'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+
+    if not isinstance(data.get('name'), str) or len(data['name'].strip()) == 0:
+        return jsonify({'data': None, 'error': 'Name must be a non-empty string'}), 400
+
+    if not validate_contact_info(data['contactinfo']):
+        return jsonify({'data': None, 'error': 'Contact info must be a valid email or phone number'}), 400
 
     try:
         new_tenant = Tenant(
