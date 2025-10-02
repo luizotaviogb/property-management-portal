@@ -42,7 +42,7 @@ import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confi
 })
 export class MaintenanceComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<IMaintenance>([]);
-  displayedColumns: string[] = ['id', 'description', 'status', 'scheduledDate', 'propertyId', 'actions'];
+  displayedColumns: string[] = ['id', 'description', 'status', 'scheduledDate', 'propertyAddress', 'actions'];
   loading = false;
   properties: IProperty[] = [];
   maintenanceStatuses: IMaintenanceStatus[] = [];
@@ -73,10 +73,8 @@ export class MaintenanceComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.maintenanceService.get().subscribe({
       next: (data) => {
+        // Apenas atualize os dados. O dataSource fará o resto.
         this.dataSource.data = data;
-        if (this.paginator) {
-          this.dataSource.paginator = this.paginator;
-        }
         this.loading = false;
       },
       error: (error) => {

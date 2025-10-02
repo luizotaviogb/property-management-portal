@@ -65,10 +65,13 @@
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="propertyId">
+        <ng-container matColumnDef="propertyAddress">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Property</th>
           <td mat-cell *matCellDef="let maintenance">
-            <mat-chip class="property-chip">Property #{{ maintenance.propertyId }}</mat-chip>
+            <div class="address-cell">
+              <mat-icon class="cell-icon">location_on</mat-icon>
+              <span>{{ maintenance.propertyAddress }}</span>
+            </div>
           </td>
         </ng-container>
 

@@ -8,4 +8,5 @@ export interface IMaintenance {
   scheduleddate?: string;
   propertyId?: number;
   propertyid?: number;
+  propertyAddress?: string;
 }

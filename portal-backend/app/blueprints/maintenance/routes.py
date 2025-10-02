@@ -69,7 +69,8 @@ def get_maintenance():
             'description': m.description,
             'status': m.maintenance_status.description,
             'scheduledDate': m.scheduleddate.isoformat(),
-            'propertyId': m.propertyid
+            'propertyId': m.propertyid,
+            'propertyAddress': m.property.address
         } for m in maintenance_tasks
     ]
     return jsonify({'data': result})
@@ -102,7 +103,8 @@ def get_maintenance_by_id(id):
         'status': maintenance.maintenance_status.description,
         'statusId': maintenance.maintenancestatusid,
         'scheduledDate': maintenance.scheduleddate.isoformat(),
-        'propertyId': maintenance.propertyid
+        'propertyId': maintenance.propertyid,
+        'propertyAddress': maintenance.property.address
     }
     return jsonify({'data': result})
 
