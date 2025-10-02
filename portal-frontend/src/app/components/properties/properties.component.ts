@@ -187,7 +187,22 @@ export class PropertiesComponent implements OnInit, AfterViewInit {
           },
           error: (error) => {
             console.error('Error deleting property:', error);
-            this.snackBar.open('Error deleting property', 'Close', { duration: 3000 });
+            const errorMessage = error?.error?.error || 'Error deleting property';
+
+            if (error.status === 409) {
+              this.dialog.open(ConfirmationDialogComponent, {
+                width: '450px',
+                data: {
+                  title: 'Cannot Delete Property',
+                  message: errorMessage,
+                  confirmText: 'OK',
+                  cancelText: '',
+                  type: 'warning'
+                }
+              });
+            } else {
+              this.snackBar.open(errorMessage, 'Close', { duration: 5000 });
+            }
           }
         });
       }

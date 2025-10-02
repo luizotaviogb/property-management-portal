@@ -1,11 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TenantsService } from '../../services/tenants.service';
-import { PropertiesService } from '../../services/properties.service';
-import { PaymentStatusService } from '../../services/payment-status.service';
 import { ITenant } from '../../interfaces/tenants';
-import { IProperty } from '../../interfaces/properties';
-import { IPaymentStatus } from '../../interfaces/paymentStatus';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -42,26 +38,20 @@ import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confi
 })
 export class TenantsComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<ITenant>([]);
-  displayedColumns: string[] = ['id', 'name', 'info', 'leaseStart', 'leaseEnd', 'paymentStatus', 'propertyId', 'actions'];
+  displayedColumns: string[] = ['id', 'name', 'contactInfo', 'actions'];
   loading = false;
-  properties: IProperty[] = [];
-  paymentStatuses: IPaymentStatus[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private tenantsService: TenantsService,
-    private propertiesService: PropertiesService,
-    private paymentStatusService: PaymentStatusService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.loadTenants();
-    this.loadProperties();
-    this.loadPaymentStatuses();
   }
 
   ngAfterViewInit(): void {
@@ -84,35 +74,11 @@ export class TenantsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  loadProperties(): void {
-    this.propertiesService.get().subscribe({
-      next: (data) => {
-        this.properties = data;
-      },
-      error: (error) => {
-        console.error('Error loading properties:', error);
-      }
-    });
-  }
-
-  loadPaymentStatuses(): void {
-    this.paymentStatusService.get().subscribe({
-      next: (data) => {
-        this.paymentStatuses = data;
-      },
-      error: (error) => {
-        console.error('Error loading payment statuses:', error);
-      }
-    });
-  }
-
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(TenantDialogComponent, {
       width: '600px',
       data: {
-        tenant: null,
-        properties: this.properties,
-        paymentStatuses: this.paymentStatuses
+        tenant: null
       }
     });
 
@@ -127,9 +93,7 @@ export class TenantsComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(TenantDialogComponent, {
       width: '600px',
       data: {
-        tenant: { ...tenant },
-        properties: this.properties,
-        paymentStatuses: this.paymentStatuses
+        tenant: { ...tenant }
       }
     });
 

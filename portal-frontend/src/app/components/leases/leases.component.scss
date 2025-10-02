@@ -1,0 +1,191 @@
+.leases-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .page-header {
+    margin-bottom: 24px;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+
+      .title-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .header-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: #1976d2;
+        }
+
+        h2 {
+          margin: 0;
+          font-size: 32px;
+          font-weight: 500;
+          color: #333;
+        }
+
+        .subtitle {
+          margin: 4px 0 0 0;
+          color: #666;
+          font-size: 14px;
+        }
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .count-badge {
+          background: #e3f2fd;
+          padding: 8px 16px;
+          border-radius: 8px;
+          text-align: center;
+
+          .count-value {
+            display: block;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1976d2;
+          }
+
+          .count-label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+          }
+        }
+
+        .add-button {
+          height: 48px;
+          padding: 0 24px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    gap: 16px;
+
+    .loading-text {
+      color: #666;
+      font-size: 16px;
+    }
+  }
+
+  .table-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .table-container {
+      overflow-x: auto;
+
+      .leases-table {
+        width: 100%;
+
+        .id-badge {
+          background: #f5f5f5;
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-weight: 500;
+          color: #666;
+        }
+
+        .name-cell,
+        .info-cell,
+        .date-cell {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .cell-icon {
+            color: #666;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .status-badge {
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 500;
+          text-transform: uppercase;
+
+          &.status-paid {
+            background: #e8f5e9;
+            color: #2e7d32;
+          }
+
+          &.status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+          }
+
+          &.status-overdue {
+            background: #ffebee;
+            color: #c62828;
+          }
+        }
+
+        .property-chip {
+          background: #e3f2fd;
+          color: #1976d2;
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 8px;
+        }
+
+        .table-row {
+          &:hover {
+            background: #f5f5f5;
+          }
+        }
+      }
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 64px 24px;
+        text-align: center;
+
+        .empty-icon {
+          font-size: 96px;
+          width: 96px;
+          height: 96px;
+          color: #ccc;
+          margin-bottom: 16px;
+        }
+
+        h3 {
+          margin: 0 0 8px 0;
+          color: #666;
+        }
+
+        p {
+          margin: 0 0 24px 0;
+          color: #999;
+        }
+      }
+    }
+  }
+}

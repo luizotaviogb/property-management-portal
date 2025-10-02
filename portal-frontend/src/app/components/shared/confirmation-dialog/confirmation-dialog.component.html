@@ -11,8 +11,8 @@
     <p class="confirmation-message">{{ data.message }}</p>
   </mat-dialog-content>
 
-  <mat-dialog-actions align="end">
-    <button mat-button (click)="onCancel()">{{ data.cancelText }}</button>
+  <mat-dialog-actions [align]="data.cancelText ? 'end' : 'center'">
+    <button *ngIf="data.cancelText" mat-button (click)="onCancel()">{{ data.cancelText }}</button>
     <button mat-raised-button [color]="data.type === 'danger' ? 'warn' : 'primary'" (click)="onConfirm()">
       {{ data.confirmText }}
     </button>

@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from sqlalchemy.exc import IntegrityError
 from ...models import Property, PropertyType, PropertyStatus
 from ...db import db
 
@@ -254,10 +255,20 @@ def delete_property(id):
         description: Property deleted successfully
       404:
         description: Property not found
+      409:
+        description: Cannot delete property due to related records
     """
     property_ = Property.query.get(id)
     if not property_:
         return jsonify({'data': None, 'error': 'Property not found'}), 404
-    db.session.delete(property_)
-    db.session.commit()
-    return jsonify({'data': {'message': 'Property deleted successfully'}})
+
+    try:
+        db.session.delete(property_)
+        db.session.commit()
+        return jsonify({'data': {'message': 'Property deleted successfully'}})
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({
+            'data': None,
+            'error': 'Cannot delete property because it has associated tenants or maintenance records. Please delete or reassign them first.'
+        }), 409

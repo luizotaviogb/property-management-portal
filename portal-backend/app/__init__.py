@@ -3,6 +3,7 @@ from .db import db
 from .config import Config
 from .blueprints.properties.routes import properties_bp
 from .blueprints.tenants.routes import tenants_bp
+from .blueprints.leases.routes import leases_bp
 from .blueprints.maintenance.routes import maintenance_bp
 from .blueprints.status.property_status import property_status_bp
 from .blueprints.status.payment_status import payment_status_bp
@@ -24,6 +25,7 @@ def create_app():
 
     app.register_blueprint(properties_bp, url_prefix='/properties')
     app.register_blueprint(tenants_bp, url_prefix='/tenants')
+    app.register_blueprint(leases_bp, url_prefix='/leases')
     app.register_blueprint(maintenance_bp, url_prefix='/maintenance')
     app.register_blueprint(property_status_bp, url_prefix='/property-status')
     app.register_blueprint(payment_status_bp, url_prefix='/payment-status')

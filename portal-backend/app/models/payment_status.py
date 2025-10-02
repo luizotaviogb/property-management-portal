@@ -6,7 +6,7 @@ class PaymentStatus(db.Model):
     paymentstatusid = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(50), unique=True, nullable=False)
 
-    tenants = db.relationship('Tenant', backref='payment_status', lazy=True)
+    leases = db.relationship('Lease', backref='payment_status', lazy=True)
 
     def __repr__(self):
         return f"<PaymentStatus {self.description}>"
