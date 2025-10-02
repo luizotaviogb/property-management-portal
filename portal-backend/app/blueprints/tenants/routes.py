@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from ...models import Tenant
+from sqlalchemy.exc import IntegrityError
+from ...models import Tenant, Lease
 from ...db import db
 
 tenants_bp = Blueprint('tenants', __name__)
@@ -176,10 +177,27 @@ def delete_tenant(id):
         description: Tenant deleted successfully
       404:
         description: Tenant not found
+      409:
+        description: Cannot delete tenant due to active leases
     """
     tenant = Tenant.query.get(id)
     if not tenant:
         return jsonify({'data': None, 'error': 'Tenant not found'}), 404
-    db.session.delete(tenant)
-    db.session.commit()
-    return jsonify({'data': {'message': 'Tenant deleted successfully'}})
+
+    active_leases = Lease.query.filter(Lease.tenantid == id).count()
+    if active_leases > 0:
+        return jsonify({
+            'data': None,
+            'error': f'Cannot delete tenant because they have {active_leases} active lease(s). Please delete or reassign the leases first.'
+        }), 409
+
+    try:
+        db.session.delete(tenant)
+        db.session.commit()
+        return jsonify({'data': {'message': 'Tenant deleted successfully'}})
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({
+            'data': None,
+            'error': 'Cannot delete tenant due to database constraints'
+        }), 409

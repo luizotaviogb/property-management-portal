@@ -1,8 +1,25 @@
 from flask import Blueprint, jsonify, request
 from ...models import Lease, Tenant, Property, PaymentStatus
 from ...db import db
+from datetime import datetime
+from sqlalchemy import and_, or_
 
 leases_bp = Blueprint('leases', __name__)
+
+def check_lease_overlap(property_id, start_date, end_date, exclude_lease_id=None):
+    query = Lease.query.filter(
+        Lease.propertyid == property_id,
+        or_(
+            and_(Lease.leasetermstart <= start_date, Lease.leasetermend >= start_date),
+            and_(Lease.leasetermstart <= end_date, Lease.leasetermend >= end_date),
+            and_(Lease.leasetermstart >= start_date, Lease.leasetermend <= end_date)
+        )
+    )
+
+    if exclude_lease_id:
+        query = query.filter(Lease.leaseid != exclude_lease_id)
+
+    return query.first() is not None
 
 @leases_bp.route('/', methods=['GET'])
 def get_leases():
@@ -209,6 +226,12 @@ def create_lease():
     if missing_fields:
         return jsonify({'data': None, 'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
 
+    if check_lease_overlap(data['propertyid'], data['leasetermstart'], data['leasetermend']):
+        return jsonify({
+            'data': None,
+            'error': 'Cannot create lease: property has overlapping lease for the specified dates'
+        }), 409
+
     try:
         new_lease = Lease(
             tenantid=data['tenantid'],
@@ -266,10 +289,21 @@ def update_lease(id):
     lease = Lease.query.get(id)
     if not lease:
         return jsonify({'data': None, 'error': 'Lease not found'}), 404
+
+    new_property_id = data.get('propertyid', lease.propertyid)
+    new_start = data.get('leasetermstart', lease.leasetermstart)
+    new_end = data.get('leasetermend', lease.leasetermend)
+
+    if check_lease_overlap(new_property_id, new_start, new_end, exclude_lease_id=id):
+        return jsonify({
+            'data': None,
+            'error': 'Cannot update lease: property has overlapping lease for the specified dates'
+        }), 409
+
     lease.tenantid = data.get('tenantid', lease.tenantid)
-    lease.propertyid = data.get('propertyid', lease.propertyid)
-    lease.leasetermstart = data.get('leasetermstart', lease.leasetermstart)
-    lease.leasetermend = data.get('leasetermend', lease.leasetermend)
+    lease.propertyid = new_property_id
+    lease.leasetermstart = new_start
+    lease.leasetermend = new_end
     lease.paymentstatusid = data.get('paymentstatusid', lease.paymentstatusid)
     db.session.commit()
     return jsonify({'data': {'message': 'Lease updated successfully'}})
