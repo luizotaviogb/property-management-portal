@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from ...models import Tenant, PaymentStatus, Property
+from ...models import Tenant
 from ...db import db
 
 tenants_bp = Blueprint('tenants', __name__)
@@ -26,29 +26,15 @@ def get_tenants():
                     type: integer
                   name:
                     type: string
-                  info:
+                  contactInfo:
                     type: string
-                  leaseStart:
-                    type: string
-                    format: date-time
-                  leaseEnd:
-                    type: string
-                    format: date-time
-                  paymentStatus:
-                    type: string
-                  propertyId:
-                    type: integer
     """
-    tenants = Tenant.query.join(PaymentStatus).join(Property).all()
+    tenants = Tenant.query.all()
     result = [
         {
             'id': t.tenantid,
             'name': t.name,
-            'info': t.contactinfo,
-            'leaseStart': t.leasetermstart.isoformat(),
-            'leaseEnd': t.leasetermend.isoformat(),
-            'paymentStatus': t.payment_status.description,
-            'propertyId': t.propertyid
+            'contactInfo': t.contactinfo
         } for t in tenants
     ]
     return jsonify({'data': result})
@@ -72,18 +58,13 @@ def get_tenant_by_id(id):
       404:
         description: Tenant not found
     """
-    tenant = Tenant.query.join(PaymentStatus).join(Property).filter(Tenant.tenantid == id).first()
+    tenant = Tenant.query.filter(Tenant.tenantid == id).first()
     if not tenant:
         return jsonify({'data': None, 'error': 'Tenant not found'}), 404
     result = {
         'id': tenant.tenantid,
         'name': tenant.name,
-        'info': tenant.contactinfo,
-        'leaseStart': tenant.leasetermstart.isoformat(),
-        'leaseEnd': tenant.leasetermend.isoformat(),
-        'paymentStatus': tenant.payment_status.description,
-        'paymentStatusId': tenant.paymentstatusid,
-        'propertyId': tenant.propertyid
+        'contactInfo': tenant.contactinfo
     }
     return jsonify({'data': result})
 
@@ -103,10 +84,6 @@ def create_tenant():
           required:
             - name
             - contactinfo
-            - leasetermstart
-            - leasetermend
-            - paymentstatusid
-            - propertyid
           properties:
             name:
               type: string
@@ -114,20 +91,6 @@ def create_tenant():
             contactinfo:
               type: string
               example: "+33123456789"
-            leasetermstart:
-              type: string
-              format: date
-              example: "2024-01-01"
-            leasetermend:
-              type: string
-              format: date
-              example: "2025-01-01"
-            paymentstatusid:
-              type: integer
-              example: 1
-            propertyid:
-              type: integer
-              example: 1
     responses:
       201:
         description: Tenant created successfully
@@ -139,7 +102,7 @@ def create_tenant():
     if not data:
         return jsonify({'data': None, 'error': 'No data provided'}), 400
 
-    required_fields = ['name', 'contactinfo', 'leasetermstart', 'leasetermend', 'paymentstatusid', 'propertyid']
+    required_fields = ['name', 'contactinfo']
     missing_fields = [field for field in required_fields if field not in data]
     if missing_fields:
         return jsonify({'data': None, 'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
@@ -147,11 +110,7 @@ def create_tenant():
     try:
         new_tenant = Tenant(
             name=data['name'],
-            contactinfo=data['contactinfo'],
-            leasetermstart=data['leasetermstart'],
-            leasetermend=data['leasetermend'],
-            paymentstatusid=data['paymentstatusid'],
-            propertyid=data['propertyid']
+            contactinfo=data['contactinfo']
         )
         db.session.add(new_tenant)
         db.session.commit()
@@ -184,16 +143,6 @@ def update_tenant(id):
                 type: string
               contactinfo:
                 type: string
-              leasetermstart:
-                type: string
-                format: date
-              leasetermend:
-                type: string
-                format: date
-              paymentstatusid:
-                type: integer
-              propertyid:
-                type: integer
     responses:
       200:
         description: Tenant updated successfully
@@ -206,10 +155,6 @@ def update_tenant(id):
         return jsonify({'data': None, 'error': 'Tenant not found'}), 404
     tenant.name = data.get('name', tenant.name)
     tenant.contactinfo = data.get('contactinfo', tenant.contactinfo)
-    tenant.leasetermstart = data.get('leasetermstart', tenant.leasetermstart)
-    tenant.leasetermend = data.get('leasetermend', tenant.leasetermend)
-    tenant.paymentstatusid = data.get('paymentstatusid', tenant.paymentstatusid)
-    tenant.propertyid = data.get('propertyid', tenant.propertyid)
     db.session.commit()
     return jsonify({'data': {'message': 'Tenant updated successfully'}})
 

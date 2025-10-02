@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { TenantsComponent } from '../tenants/tenants.component';
+import { LeasesComponent } from '../leases/leases.component';
 import { PropertiesComponent } from '../properties/properties.component';
 import { MaintenanceComponent } from '../maintenance/maintenance.component';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -15,6 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [
     CommonModule,
     TenantsComponent,
+    LeasesComponent,
     PropertiesComponent,
     MaintenanceComponent,
     MatTabsModule,

@@ -11,7 +11,7 @@ class Property(db.Model):
     purchasedate = db.Column(db.Date, nullable=False)
     price = db.Column(db.Numeric(15, 2), nullable=False)
 
-    tenants = db.relationship('Tenant', backref='property', lazy=True)
+    leases = db.relationship('Lease', backref='property', lazy=True)
     maintenance_tasks = db.relationship('Maintenance', backref='property', lazy=True)
 
     def __repr__(self):

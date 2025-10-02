@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS maintenance;
+DROP TABLE IF EXISTS leases;
 DROP TABLE IF EXISTS tenants;
 DROP TABLE IF EXISTS properties;
 DROP TABLE IF EXISTS property_types;
@@ -40,11 +41,17 @@ CREATE TABLE properties (
 CREATE TABLE tenants (
     TenantID SERIAL PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
-    ContactInfo VARCHAR(100) NOT NULL,
+    ContactInfo VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE leases (
+    LeaseID SERIAL PRIMARY KEY,
+    TenantID INTEGER NOT NULL,
+    PropertyID INTEGER NOT NULL,
     LeaseTermStart DATE NOT NULL,
     LeaseTermEnd DATE NOT NULL,
     PaymentStatusID INTEGER NOT NULL,
-    PropertyID INTEGER NOT NULL,
+    CONSTRAINT fk_tenant FOREIGN KEY (TenantID) REFERENCES tenants(TenantID) ON DELETE RESTRICT,
     CONSTRAINT fk_property FOREIGN KEY (PropertyID) REFERENCES properties(PropertyID) ON DELETE RESTRICT,
     CONSTRAINT fk_payment_status FOREIGN KEY (PaymentStatusID) REFERENCES payment_statuses(PaymentStatusID) ON DELETE RESTRICT,
     CONSTRAINT valid_lease_dates CHECK (LeaseTermEnd > LeaseTermStart)
@@ -66,6 +73,7 @@ ALTER SEQUENCE payment_statuses_PaymentStatusID_seq RESTART WITH 1;
 ALTER SEQUENCE property_types_PropertyTypeID_seq RESTART WITH 1;
 ALTER SEQUENCE properties_PropertyID_seq RESTART WITH 1;
 ALTER SEQUENCE tenants_TenantID_seq RESTART WITH 1;
+ALTER SEQUENCE leases_LeaseID_seq RESTART WITH 1;
 ALTER SEQUENCE maintenance_TaskID_seq RESTART WITH 1;
 
 INSERT INTO property_statuses (Description) VALUES
@@ -94,10 +102,15 @@ INSERT INTO properties (Address, PropertyTypeID, PropertyStatusID, PurchaseDate,
 ('8 Avenue Foch, Lyon, 69006', 2, 2, '2019-11-30', 950000.00),    -- Commercial, Occupied
 ('3 Quai de Grenelle, Marseille, 13002', 1, 2, '2021-01-20', 400000.00); -- Residential, Occupied
 
-INSERT INTO tenants (Name, ContactInfo, LeaseTermStart, LeaseTermEnd, PaymentStatusID, PropertyID) VALUES
-('Jean Dupont', '+33123456789', '2022-05-01', '2023-04-30', 1, 3), -- Paid
-('Marie Curie', '+33456789012', '2023-01-15', '2024-01-14', 2, 2), -- Pending
-('Claude Monet', '+33789012345', '2022-07-10', '2023-07-09', 1, 2); -- Paid
+INSERT INTO tenants (Name, ContactInfo) VALUES
+('Jean Dupont', '+33123456789'),
+('Marie Curie', '+33456789012'),
+('Claude Monet', '+33789012345');
+
+INSERT INTO leases (TenantID, PropertyID, LeaseTermStart, LeaseTermEnd, PaymentStatusID) VALUES
+(1, 3, '2022-05-01', '2023-04-30', 1),
+(2, 2, '2023-01-15', '2024-01-14', 2),
+(3, 2, '2022-07-10', '2023-07-09', 1);
 
 INSERT INTO maintenance (Description, MaintenanceStatusID, ScheduledDate, PropertyID) VALUES
 ('Fix leaking roof', 1, '2022-03-15', 1),       -- Completed
@@ -106,7 +119,8 @@ INSERT INTO maintenance (Description, MaintenanceStatusID, ScheduledDate, Proper
 
 CREATE INDEX idx_properties_propertytypeid ON properties(PropertyTypeID);
 CREATE INDEX idx_properties_propertystatusid ON properties(PropertyStatusID);
-CREATE INDEX idx_tenants_propertyid ON tenants(PropertyID);
-CREATE INDEX idx_tenants_paymentstatusid ON tenants(PaymentStatusID);
+CREATE INDEX idx_leases_tenantid ON leases(TenantID);
+CREATE INDEX idx_leases_propertyid ON leases(PropertyID);
+CREATE INDEX idx_leases_paymentstatusid ON leases(PaymentStatusID);
 CREATE INDEX idx_maintenance_propertyid ON maintenance(PropertyID);
 CREATE INDEX idx_maintenance_maintenancestatusid ON maintenance(MaintenanceStatusID);

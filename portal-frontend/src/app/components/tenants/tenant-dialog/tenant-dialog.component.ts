@@ -9,13 +9,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ITenant } from '../../../interfaces/tenants';
-import { IProperty } from '../../../interfaces/properties';
-import { IPaymentStatus } from '../../../interfaces/paymentStatus';
 
 export interface TenantDialogData {
   tenant: ITenant | null;
-  properties: IProperty[];
-  paymentStatuses: IPaymentStatus[];
 }
 
 @Component({
@@ -46,19 +42,11 @@ export class TenantDialogComponent implements OnInit {
   ) {
     this.isEditMode = !!data.tenant;
 
-    const leaseStart = data.tenant?.leaseStart || data.tenant?.leasetermstart || '';
-    const leaseEnd = data.tenant?.leaseEnd || data.tenant?.leasetermend || '';
-    const contactInfo = data.tenant?.info || data.tenant?.contactinfo || '';
-    const paymentStatusId = data.tenant?.paymentstatusid || '';
-    const propertyId = data.tenant?.propertyId || data.tenant?.propertyid || '';
+    const contactInfo = data.tenant?.contactInfo || data.tenant?.contactinfo || '';
 
     this.tenantForm = this.fb.group({
       name: [data.tenant?.name || '', Validators.required],
-      contactinfo: [contactInfo, Validators.required],
-      leasetermstart: [leaseStart, Validators.required],
-      leasetermend: [leaseEnd, Validators.required],
-      paymentstatusid: [paymentStatusId, Validators.required],
-      propertyid: [propertyId, Validators.required]
+      contactinfo: [contactInfo, Validators.required]
     });
   }
 
@@ -72,16 +60,9 @@ export class TenantDialogComponent implements OnInit {
     if (this.tenantForm.valid) {
       const formValue = this.tenantForm.value;
 
-      const leaseStart = new Date(formValue.leasetermstart);
-      const leaseEnd = new Date(formValue.leasetermend);
-
       const tenant: ITenant = {
         name: formValue.name,
-        contactinfo: formValue.contactinfo,
-        leasetermstart: leaseStart.toISOString().split('T')[0],
-        leasetermend: leaseEnd.toISOString().split('T')[0],
-        paymentstatusid: formValue.paymentstatusid,
-        propertyid: formValue.propertyid
+        contactinfo: formValue.contactinfo
       };
 
       this.dialogRef.close(tenant);

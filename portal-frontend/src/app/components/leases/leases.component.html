@@ -1,0 +1,124 @@
+<div class="leases-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <mat-icon class="header-icon">description</mat-icon>
+        <div>
+          <h2>Leases</h2>
+          <p class="subtitle">Manage lease agreements and contracts</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="count-badge">
+          <span class="count-value">{{ dataSource.data.length }}</span>
+          <span class="count-label">Total</span>
+        </div>
+        <button mat-raised-button color="primary" (click)="openCreateDialog()" class="add-button">
+          <mat-icon>add</mat-icon>
+          Add New Lease
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Loading leases...</p>
+  </div>
+
+  <mat-card *ngIf="!loading" class="table-card">
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="leases-table" matSort #sort="matSort">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let lease">
+            <span class="id-badge">#{{ lease.id }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tenantName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tenant</th>
+          <td mat-cell *matCellDef="let lease">
+            <div class="name-cell">
+              <mat-icon class="cell-icon">person</mat-icon>
+              <span>{{ lease.tenantName }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="propertyAddress">
+          <th mat-header-cell *matHeaderCellDef>Property</th>
+          <td mat-cell *matCellDef="let lease">
+            <div class="info-cell">
+              <mat-icon class="cell-icon">home</mat-icon>
+              <span>{{ lease.propertyAddress }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="leaseStart">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Lease Start</th>
+          <td mat-cell *matCellDef="let lease">
+            <div class="date-cell">
+              <mat-icon class="cell-icon">calendar_today</mat-icon>
+              <span>{{ lease.leaseStart | date:'mediumDate' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="leaseEnd">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Lease End</th>
+          <td mat-cell *matCellDef="let lease">
+            <div class="date-cell">
+              <mat-icon class="cell-icon">event_available</mat-icon>
+              <span>{{ lease.leaseEnd | date:'mediumDate' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="paymentStatus">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Status</th>
+          <td mat-cell *matCellDef="let lease">
+            <span class="status-badge" [ngClass]="'status-' + (lease.paymentStatus || '').toLowerCase()">
+              {{ lease.paymentStatus }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let lease">
+            <div class="action-buttons">
+              <button mat-icon-button color="primary" (click)="openEditDialog(lease)" matTooltip="Edit Lease">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteLease(lease)" matTooltip="Delete Lease">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+
+      <div *ngIf="dataSource.data.length === 0" class="empty-state">
+        <mat-icon class="empty-icon">description</mat-icon>
+        <h3>No Leases Found</h3>
+        <p>Get started by adding your first lease to the system.</p>
+        <button mat-raised-button color="primary" (click)="openCreateDialog()">
+          <mat-icon>add</mat-icon>
+          Add Your First Lease
+        </button>
+      </div>
+    </div>
+
+    <mat-paginator *ngIf="dataSource.data.length > 0"
+      [length]="dataSource.data.length"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      showFirstLastButtons>
+    </mat-paginator>
+  </mat-card>
+</div>
