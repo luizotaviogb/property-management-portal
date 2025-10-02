@@ -270,5 +270,5 @@ def delete_property(id):
         db.session.rollback()
         return jsonify({
             'data': None,
-            'error': 'Cannot delete property because it has associated tenants or maintenance records. Please delete or reassign them first.'
+            'error': 'Cannot delete property because it has associated leases or maintenance records. Please delete or reassign them first.'
         }), 409
