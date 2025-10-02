@@ -12,6 +12,19 @@ def get_maintenance():
     ---
     tags:
       - Maintenance
+    parameters:
+      - name: status
+        in: query
+        type: string
+        description: Filter by maintenance status
+      - name: sort
+        in: query
+        type: string
+        description: Sort by field (scheduledDate)
+      - name: order
+        in: query
+        type: string
+        description: Sort order (asc, desc)
     responses:
       200:
         description: A list of maintenance tasks
@@ -35,7 +48,21 @@ def get_maintenance():
                   propertyId:
                     type: integer
     """
-    maintenance_tasks = Maintenance.query.join(MaintenanceStatus).join(Property).all()
+    query = Maintenance.query.join(MaintenanceStatus).join(Property)
+
+    status_filter = request.args.get('status')
+    if status_filter:
+        query = query.filter(MaintenanceStatus.description.ilike(f'%{status_filter}%'))
+
+    sort_by = request.args.get('sort', 'taskid')
+    order = request.args.get('order', 'asc')
+
+    if sort_by == 'scheduledDate':
+        query = query.order_by(Maintenance.scheduleddate.asc() if order == 'asc' else Maintenance.scheduleddate.desc())
+    else:
+        query = query.order_by(Maintenance.taskid.asc() if order == 'asc' else Maintenance.taskid.desc())
+
+    maintenance_tasks = query.all()
     result = [
         {
             'id': m.taskid,

@@ -21,6 +21,19 @@ def get_tenants():
     ---
     tags:
       - Tenants
+    parameters:
+      - name: search
+        in: query
+        type: string
+        description: Search by name or contact info
+      - name: sort
+        in: query
+        type: string
+        description: Sort by field (name)
+      - name: order
+        in: query
+        type: string
+        description: Sort order (asc, desc)
     responses:
       200:
         description: A list of tenants
@@ -39,7 +52,24 @@ def get_tenants():
                   contactInfo:
                     type: string
     """
-    tenants = Tenant.query.all()
+    query = Tenant.query
+
+    search = request.args.get('search')
+    if search:
+        query = query.filter(
+            (Tenant.name.ilike(f'%{search}%')) |
+            (Tenant.contactinfo.ilike(f'%{search}%'))
+        )
+
+    sort_by = request.args.get('sort', 'tenantid')
+    order = request.args.get('order', 'asc')
+
+    if sort_by == 'name':
+        query = query.order_by(Tenant.name.asc() if order == 'asc' else Tenant.name.desc())
+    else:
+        query = query.order_by(Tenant.tenantid.asc() if order == 'asc' else Tenant.tenantid.desc())
+
+    tenants = query.all()
     result = [
         {
             'id': t.tenantid,

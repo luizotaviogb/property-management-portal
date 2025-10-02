@@ -13,6 +13,23 @@ def get_properties():
     ---
     tags:
       - Properties
+    parameters:
+      - name: status
+        in: query
+        type: string
+        description: Filter by property status
+      - name: type
+        in: query
+        type: string
+        description: Filter by property type
+      - name: sort
+        in: query
+        type: string
+        description: Sort by field (price, purchaseDate)
+      - name: order
+        in: query
+        type: string
+        description: Sort order (asc, desc)
     responses:
       200:
         description: A list of properties
@@ -39,7 +56,27 @@ def get_properties():
                     type: number
                     format: float
     """
-    properties = Property.query.join(PropertyType).join(PropertyStatus).all()
+    query = Property.query.join(PropertyType).join(PropertyStatus)
+
+    status_filter = request.args.get('status')
+    if status_filter:
+        query = query.filter(PropertyStatus.description.ilike(f'%{status_filter}%'))
+
+    type_filter = request.args.get('type')
+    if type_filter:
+        query = query.filter(PropertyType.description.ilike(f'%{type_filter}%'))
+
+    sort_by = request.args.get('sort', 'propertyid')
+    order = request.args.get('order', 'asc')
+
+    if sort_by == 'price':
+        query = query.order_by(Property.price.asc() if order == 'asc' else Property.price.desc())
+    elif sort_by == 'purchaseDate':
+        query = query.order_by(Property.purchasedate.asc() if order == 'asc' else Property.purchasedate.desc())
+    else:
+        query = query.order_by(Property.propertyid.asc() if order == 'asc' else Property.propertyid.desc())
+
+    properties = query.all()
     result = [
         {
             'id': p.propertyid,

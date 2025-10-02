@@ -28,6 +28,19 @@ def get_leases():
     ---
     tags:
       - Leases
+    parameters:
+      - name: paymentStatus
+        in: query
+        type: string
+        description: Filter by payment status
+      - name: sort
+        in: query
+        type: string
+        description: Sort by field (leaseStart, leaseEnd)
+      - name: order
+        in: query
+        type: string
+        description: Sort order (asc, desc)
     responses:
       200:
         description: A list of leases
@@ -58,7 +71,23 @@ def get_leases():
                   paymentStatus:
                     type: string
     """
-    leases = Lease.query.join(Tenant).join(Property).join(PaymentStatus).all()
+    query = Lease.query.join(Tenant).join(Property).join(PaymentStatus)
+
+    payment_status = request.args.get('paymentStatus')
+    if payment_status:
+        query = query.filter(PaymentStatus.description.ilike(f'%{payment_status}%'))
+
+    sort_by = request.args.get('sort', 'leaseid')
+    order = request.args.get('order', 'asc')
+
+    if sort_by == 'leaseStart':
+        query = query.order_by(Lease.leasetermstart.asc() if order == 'asc' else Lease.leasetermstart.desc())
+    elif sort_by == 'leaseEnd':
+        query = query.order_by(Lease.leasetermend.asc() if order == 'asc' else Lease.leasetermend.desc())
+    else:
+        query = query.order_by(Lease.leaseid.asc() if order == 'asc' else Lease.leaseid.desc())
+
+    leases = query.all()
     result = [
         {
             'id': l.leaseid,
