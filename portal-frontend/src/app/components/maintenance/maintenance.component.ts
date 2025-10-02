@@ -18,6 +18,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { MaintenanceDialogComponent } from './maintenance-dialog/maintenance-dialog.component';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-maintenance',
@@ -169,8 +170,19 @@ export class MaintenanceComponent implements OnInit, AfterViewInit {
   }
 
   deleteMaintenance(maintenance: IMaintenance): void {
-    if (confirm(`Are you sure you want to delete this maintenance task?`)) {
-      if (maintenance.id) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Maintenance',
+        message: 'Are you sure you want to delete this maintenance task? This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && maintenance.id) {
         this.maintenanceService.delete(maintenance.id).subscribe({
           next: () => {
             this.snackBar.open('Maintenance deleted successfully', 'Close', { duration: 3000 });
@@ -182,6 +194,6 @@ export class MaintenanceComponent implements OnInit, AfterViewInit {
           }
         });
       }
-    }
+    });
   }
 }

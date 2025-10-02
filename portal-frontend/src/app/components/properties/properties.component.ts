@@ -18,6 +18,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { PropertyDialogComponent } from './property-dialog/property-dialog.component';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-properties',
@@ -166,8 +167,19 @@ export class PropertiesComponent implements OnInit, AfterViewInit {
   }
 
   deleteProperty(property: IProperty): void {
-    if (confirm(`Are you sure you want to delete property at ${property.address}?`)) {
-      if (property.id) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Property',
+        message: `Are you sure you want to delete property at "${property.address}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && property.id) {
         this.propertiesService.delete(property.id).subscribe({
           next: () => {
             this.snackBar.open('Property deleted successfully', 'Close', { duration: 3000 });
@@ -179,6 +191,6 @@ export class PropertiesComponent implements OnInit, AfterViewInit {
           }
         });
       }
-    }
+    });
   }
 }

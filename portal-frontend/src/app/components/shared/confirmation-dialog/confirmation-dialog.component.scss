@@ -1,0 +1,54 @@
+.confirmation-dialog {
+  text-align: center;
+}
+
+.dialog-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto 16px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  &.icon-danger {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+  }
+
+  &.icon-warning {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+  }
+
+  &.icon-info {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+  }
+}
+
+h2 {
+  margin-bottom: 8px;
+}
+
+mat-dialog-content {
+  padding: 0 24px 20px;
+}
+
+.confirmation-message {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  justify-content: flex-end;
+}

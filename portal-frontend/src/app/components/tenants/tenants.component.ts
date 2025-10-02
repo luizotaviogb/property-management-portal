@@ -18,6 +18,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { TenantDialogComponent } from './tenant-dialog/tenant-dialog.component';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-tenants',
@@ -166,8 +167,19 @@ export class TenantsComponent implements OnInit, AfterViewInit {
   }
 
   deleteTenant(tenant: ITenant): void {
-    if (confirm(`Are you sure you want to delete tenant ${tenant.name}?`)) {
-      if (tenant.id) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Tenant',
+        message: `Are you sure you want to delete tenant "${tenant.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && tenant.id) {
         this.tenantsService.delete(tenant.id).subscribe({
           next: () => {
             this.snackBar.open('Tenant deleted successfully', 'Close', { duration: 3000 });
@@ -179,6 +191,6 @@ export class TenantsComponent implements OnInit, AfterViewInit {
           }
         });
       }
-    }
+    });
   }
 }
