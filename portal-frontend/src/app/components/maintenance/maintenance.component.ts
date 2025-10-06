@@ -107,6 +107,11 @@ export class MaintenanceComponent implements OnInit, AfterViewInit {
     });
   }
 
+  refreshReferenceData(): void {
+    this.loadProperties();
+    this.loadMaintenanceStatuses();
+  }
+
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(MaintenanceDialogComponent, {
       width: '600px',

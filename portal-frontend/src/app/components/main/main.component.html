@@ -9,7 +9,7 @@
   </mat-toolbar>
 
   <div class="main-content">
-    <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="content-tabs" animationDuration="300ms">
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="content-tabs" animationDuration="300ms" (selectedTabChange)="onTabChange($event)">
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon">people</mat-icon>

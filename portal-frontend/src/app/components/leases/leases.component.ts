@@ -122,6 +122,12 @@ export class LeasesComponent implements OnInit, AfterViewInit {
     });
   }
 
+  refreshReferenceData(): void {
+    this.loadTenants();
+    this.loadProperties();
+    this.loadPaymentStatuses();
+  }
+
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(LeaseDialogComponent, {
       width: '600px',

@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { TenantsComponent } from '../tenants/tenants.component';
 import { LeasesComponent } from '../leases/leases.component';
 import { PropertiesComponent } from '../properties/properties.component';
 import { MaintenanceComponent } from '../maintenance/maintenance.component';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule, MatTabChangeEvent } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,4 +31,16 @@ import { MatButtonModule } from '@angular/material/button';
 export class MainComponent {
   selectedTabIndex: number = 0;
   currentYear = new Date().getFullYear();
+
+  @ViewChild(LeasesComponent) leasesComponent!: LeasesComponent;
+  @ViewChild(MaintenanceComponent) maintenanceComponent!: MaintenanceComponent;
+
+  onTabChange(event: MatTabChangeEvent): void {
+
+    if (event.index === 1 && this.leasesComponent) {
+      this.leasesComponent.refreshReferenceData();
+    } else if (event.index === 3 && this.maintenanceComponent) {
+      this.maintenanceComponent.refreshReferenceData();
+    }
+  }
 }
