@@ -26,7 +26,7 @@
     <p class="loading-text">Loading properties...</p>
   </div>
 
-  <mat-card *ngIf="!loading" class="table-card">
+  <mat-card class="table-card" [class.loading-overlay]="loading">
     <div class="table-container">
       <table mat-table [dataSource]="dataSource" class="properties-table" matSort #sort="matSort">
         <ng-container matColumnDef="id">
@@ -108,7 +108,8 @@
       </div>
     </div>
 
-    <mat-paginator *ngIf="dataSource.data.length > 0"
+    <mat-paginator
+      [style.visibility]="dataSource.data.length > 0 ? 'visible' : 'hidden'"
       [length]="dataSource.data.length"
       [pageSize]="10"
       [pageSizeOptions]="[5, 10, 25, 50]"
