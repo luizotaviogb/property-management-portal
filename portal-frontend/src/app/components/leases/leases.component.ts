@@ -166,7 +166,8 @@ export class LeasesComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         console.error('Error creating lease:', error);
-        this.snackBar.open('Error creating lease', 'Close', { duration: 3000 });
+        const errorMessage = error.error?.error || 'Error creating lease';
+        this.snackBar.open(errorMessage, 'Close', { duration: 5000 });
       }
     });
   }
@@ -179,7 +180,8 @@ export class LeasesComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         console.error('Error updating lease:', error);
-        this.snackBar.open('Error updating lease', 'Close', { duration: 3000 });
+        const errorMessage = error.error?.error || 'Error updating lease';
+        this.snackBar.open(errorMessage, 'Close', { duration: 5000 });
       }
     });
   }

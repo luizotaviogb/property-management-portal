@@ -9,11 +9,8 @@ leases_bp = Blueprint('leases', __name__)
 def check_lease_overlap(property_id, start_date, end_date, exclude_lease_id=None):
     query = Lease.query.filter(
         Lease.propertyid == property_id,
-        or_(
-            and_(Lease.leasetermstart <= start_date, Lease.leasetermend >= start_date),
-            and_(Lease.leasetermstart <= end_date, Lease.leasetermend >= end_date),
-            and_(Lease.leasetermstart >= start_date, Lease.leasetermend <= end_date)
-        )
+        Lease.leasetermstart <= end_date,
+        Lease.leasetermend >= start_date
     )
 
     if exclude_lease_id:
@@ -331,6 +328,37 @@ def update_lease(id):
     new_property_id = data.get('propertyid', lease.propertyid)
     new_start = data.get('leasetermstart', lease.leasetermstart)
     new_end = data.get('leasetermend', lease.leasetermend)
+
+    if 'leasetermstart' in data:
+        try:
+            start_date = datetime.strptime(str(data['leasetermstart']), '%Y-%m-%d')
+            new_start = data['leasetermstart']
+        except ValueError:
+            return jsonify({'data': None, 'error': 'Lease start date must be in YYYY-MM-DD format'}), 400
+    else:
+        new_start = lease.leasetermstart
+
+    if 'leasetermend' in data:
+        try:
+            end_date = datetime.strptime(str(data['leasetermend']), '%Y-%m-%d')
+            new_end = data['leasetermend']
+        except ValueError:
+            return jsonify({'data': None, 'error': 'Lease end date must be in YYYY-MM-DD format'}), 400
+    else:
+        new_end = lease.leasetermend
+
+    if isinstance(new_start, str):
+        start_date = datetime.strptime(new_start, '%Y-%m-%d')
+    else:
+        start_date = datetime.combine(new_start, datetime.min.time())
+
+    if isinstance(new_end, str):
+        end_date = datetime.strptime(new_end, '%Y-%m-%d')
+    else:
+        end_date = datetime.combine(new_end, datetime.min.time())
+
+    if end_date <= start_date:
+        return jsonify({'data': None, 'error': 'Lease end date must be after start date'}), 400
 
     if check_lease_overlap(new_property_id, new_start, new_end, exclude_lease_id=id):
         return jsonify({
