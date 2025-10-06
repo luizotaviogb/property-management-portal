@@ -14,7 +14,7 @@ export class TenantsService {
   constructor(private http: HttpClient) {}
 
   get(): Observable<ITenant[]> {
-    return this.http.get<{ data: ITenant[] }>(this.baseUrl).pipe(
+    return this.http.get<{ data: ITenant[] }>(`${this.baseUrl}/`).pipe(
       map(response => response.data)
     );
   }
@@ -26,7 +26,7 @@ export class TenantsService {
   }
 
   create(tenant: ITenant): Observable<ITenant> {
-    return this.http.post<{ data: ITenant }>(this.baseUrl, tenant).pipe(
+    return this.http.post<{ data: ITenant }>(`${this.baseUrl}/`, tenant).pipe(
       map(response => response.data)
     );
   }

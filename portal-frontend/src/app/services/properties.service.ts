@@ -14,7 +14,7 @@ export class PropertiesService {
   constructor(private http: HttpClient) {}
 
   get(): Observable<IProperty[]> {
-    return this.http.get<{ data: IProperty[] }>(this.baseUrl).pipe(
+    return this.http.get<{ data: IProperty[] }>(`${this.baseUrl}/`).pipe(
       map(response => response.data)
     );
   }
@@ -26,7 +26,7 @@ export class PropertiesService {
   }
 
   create(property: IProperty): Observable<IProperty> {
-    return this.http.post<{ data: IProperty }>(this.baseUrl, property).pipe(
+    return this.http.post<{ data: IProperty }>(`${this.baseUrl}/`, property).pipe(
       map(response => response.data)
     );
   }

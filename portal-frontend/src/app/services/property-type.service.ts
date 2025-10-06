@@ -14,7 +14,7 @@ export class PropertyTypeService {
   constructor(private http: HttpClient) {}
 
   get(): Observable<IPropertyType[]> {
-    return this.http.get<{ data: any[] }>(this.baseUrl).pipe(
+    return this.http.get<{ data: any[] }>(`${this.baseUrl}/`).pipe(
       map(response => response.data.map(item => ({
         id: item.propertytypeid,
         description: item.description

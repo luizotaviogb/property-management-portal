@@ -14,7 +14,7 @@ export class LeasesService {
   constructor(private http: HttpClient) {}
 
   get(): Observable<ILease[]> {
-    return this.http.get<{ data: ILease[] }>(this.baseUrl).pipe(
+    return this.http.get<{ data: ILease[] }>(`${this.baseUrl}/`).pipe(
       map(response => response.data)
     );
   }
@@ -38,7 +38,7 @@ export class LeasesService {
   }
 
   create(lease: ILease): Observable<ILease> {
-    return this.http.post<{ data: ILease }>(this.baseUrl, lease).pipe(
+    return this.http.post<{ data: ILease }>(`${this.baseUrl}/`, lease).pipe(
       map(response => response.data)
     );
   }

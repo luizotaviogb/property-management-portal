@@ -14,7 +14,7 @@ export class PaymentStatusService {
   constructor(private http: HttpClient) {}
 
   get(): Observable<IPaymentStatus[]> {
-    return this.http.get<{ data: any[] }>(this.baseUrl).pipe(
+    return this.http.get<{ data: any[] }>(`${this.baseUrl}/`).pipe(
       map(response => response.data.map(item => ({
         id: item.paymentstatusid,
         description: item.description

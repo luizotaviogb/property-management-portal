@@ -14,7 +14,7 @@ export class MaintenanceService {
   constructor(private http: HttpClient) {}
 
   get(): Observable<IMaintenance[]> {
-    return this.http.get<{ data: IMaintenance[] }>(this.baseUrl).pipe(
+    return this.http.get<{ data: IMaintenance[] }>(`${this.baseUrl}/`).pipe(
       map(response => response.data)
     );
   }
@@ -26,7 +26,7 @@ export class MaintenanceService {
   }
 
   create(maintenance: IMaintenance): Observable<IMaintenance> {
-    return this.http.post<{ data: IMaintenance }>(this.baseUrl, maintenance).pipe(
+    return this.http.post<{ data: IMaintenance }>(`${this.baseUrl}/`, maintenance).pipe(
       map(response => response.data)
     );
   }

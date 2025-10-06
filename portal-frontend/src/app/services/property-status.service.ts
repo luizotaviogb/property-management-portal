@@ -14,7 +14,7 @@ export class PropertyStatusService {
   constructor(private http: HttpClient) {}
 
   get(): Observable<IPropertyStatus[]> {
-    return this.http.get<{ data: any[] }>(this.baseUrl).pipe(
+    return this.http.get<{ data: any[] }>(`${this.baseUrl}/`).pipe(
       map(response => response.data.map(item => ({
         id: item.propertystatusid,
         description: item.description
